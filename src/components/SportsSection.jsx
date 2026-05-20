@@ -1,4 +1,3 @@
-
 const SportsSection = () => {
   return (
     <section className="py-20 bg-slate-950 border-t border-white/5 text-white">
