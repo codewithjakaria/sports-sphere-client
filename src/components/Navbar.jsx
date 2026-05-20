@@ -14,17 +14,28 @@ const Navbar = () => {
   const user = {
     name: 'Jakaria Ahmed',
     email: 'jakaria@example.com',
-  
+    photoUrl:
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
   };
 
+  // বেসিক এবং প্রাইভেট রাউটের কম্বিনেশন (রিকোয়ারমেন্ট অনুযায়ী)
   const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'All Facilities', href: '/all-facility' },
+    { name: 'Home', href: '/', private: false },
+    { name: 'All Facilities', href: '/facilities', private: false },
+    { name: 'My Bookings', href: '/my-bookings', private: true },
+    { name: 'Add Facility', href: '/add-facility', private: true },
+    { name: 'Manage My Facilities', href: '/manage-facilities', private: true },
   ];
+
+  // লগইন স্ট্যাটাস অনুযায়ী ফিল্টার করা লিংকের অ্যারে
+  const visibleLinks = navLinks.filter(
+    link => !link.private || (link.private && isLoggedIn),
+  );
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border-b border-emerald-500/20 shadow-lg shadow-emerald-950/20">
       <header className="flex h-20 items-center justify-between px-6 container mx-auto">
+        {/* Mobile Menu & Logo */}
         <div className="flex items-center gap-4">
           <button
             className="md:hidden text-gray-300 cursor-pointer p-2 rounded-xl hover:bg-white/10 transition"
@@ -75,8 +86,9 @@ const Navbar = () => {
           </Link>
         </div>
 
+        {/* Desktop Navigation Links */}
         <ul className="hidden items-center gap-2 md:flex list-none m-0 p-0">
-          {navLinks.map(link => {
+          {visibleLinks.map(link => {
             const isActive = pathname === link.href;
             return (
               <li key={link.href}>
@@ -95,6 +107,7 @@ const Navbar = () => {
           })}
         </ul>
 
+        {/* Profile Dropdown / Login Button */}
         <div className="flex items-center gap-4">
           {isLoggedIn ? (
             <div className="relative">
@@ -178,10 +191,11 @@ const Navbar = () => {
         </div>
       </header>
 
+      {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
         <div className="border-t border-white/5 md:hidden bg-slate-900/95 backdrop-blur-2xl w-full shadow-2xl absolute left-0 top-20 z-40">
           <ul className="flex flex-col gap-1 p-4 list-none m-0">
-            {navLinks.map(link => (
+            {visibleLinks.map(link => (
               <li key={link.href}>
                 <Link
                   href={link.href}
@@ -196,42 +210,6 @@ const Navbar = () => {
                 </Link>
               </li>
             ))}
-
-            {isLoggedIn && (
-              <>
-                <div className="h-px bg-white/5 my-2 mx-2" />
-                <p className="text-[11px] font-bold uppercase tracking-wider text-gray-500 px-4 py-1">
-                  Dashboard
-                </p>
-                <li>
-                  <Link
-                    href="/my-bookings"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-white/5"
-                  >
-                    My Bookings
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/add-facility"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-white/5"
-                  >
-                    Add Facility
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/manage-facilities"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-300 hover:bg-white/5"
-                  >
-                    Manage My Facilities
-                  </Link>
-                </li>
-              </>
-            )}
           </ul>
         </div>
       )}
