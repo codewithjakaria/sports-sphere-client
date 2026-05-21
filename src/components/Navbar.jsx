@@ -18,7 +18,7 @@ const Navbar = () => {
       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
   };
 
-  // বেসিক এবং প্রাইভেট রাউটের কম্বিনেশন (রিকোয়ারমেন্ট অনুযায়ী)
+
   const navLinks = [
     { name: 'Home', href: '/', private: false },
     { name: 'All Facilities', href: '/facilities', private: false },
@@ -27,7 +27,7 @@ const Navbar = () => {
     { name: 'Manage My Facilities', href: '/manage-facilities', private: true },
   ];
 
-  // লগইন স্ট্যাটাস অনুযায়ী ফিল্টার করা লিংকের অ্যারে
+  
   const visibleLinks = navLinks.filter(
     link => !link.private || (link.private && isLoggedIn),
   );
