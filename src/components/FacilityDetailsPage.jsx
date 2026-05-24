@@ -1,34 +1,50 @@
+
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { authClient } from '@/lib/auth-client';
-import {
-  Calendar,
-  Clock,
-  DollarSign,
-  MapPin,
-  ArrowLeft,
-  ShieldCheck,
-  Users,
-} from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
-export default function FacilityDetailsPage({ params }) {
+export default function FacilityDetailsPage({ id }) {
   const router = useRouter();
-  const { id } = use(params);
   const [facility, setFacility] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bookingData, setBookingData] = useState({ date: '', time_slot: '' });
   const { data: session } = authClient.useSession();
 
   useEffect(() => {
-    import('@/data/facilities').then(module => {
-      const found = module.featuredFacilities.find(f => f.id === parseInt(id));
-      setFacility(found);
-      setLoading(false);
-    });
+    if (!id) return;
+
+    const fetchFacility = async () => {
+      try {
+        setLoading(true);
+       
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/facilities/${id}`,
+        );
+
+        if (res.ok) {
+          const data = await res.json();
+          setFacility(data);
+        } else {
+       
+          const module = await import('@/data/facilities');
+          const found = module.featuredFacilities.find(
+            f => f.id === parseInt(id),
+          );
+          setFacility(found);
+        }
+      } catch (error) {
+        console.error('Error fetching facility:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFacility();
   }, [id]);
 
   const handleBooking = async () => {
@@ -55,7 +71,7 @@ export default function FacilityDetailsPage({ params }) {
             user_email: session.user.email,
             booking_date: bookingData.date,
             time_slot: bookingData.time_slot,
-            total_price: facility.price + 2,
+            total_price: facility.price,
             status: 'pending',
           }),
         },
@@ -65,7 +81,8 @@ export default function FacilityDetailsPage({ params }) {
         toast.success('Booking successful!');
         router.push('/my-bookings');
       } else {
-        toast.error('Failed to book');
+        const errorData = await res.json();
+        toast.error(errorData.message || 'Failed to book');
       }
     } catch (err) {
       toast.error('Something went wrong');
@@ -74,13 +91,13 @@ export default function FacilityDetailsPage({ params }) {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center text-white">
         Loading...
       </div>
     );
   if (!facility)
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center text-white">
         Facility Not Found!
       </div>
     );
@@ -90,30 +107,28 @@ export default function FacilityDetailsPage({ params }) {
       <div className="container mx-auto px-6 max-w-6xl">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-gray-400 hover:text-green-400 transition-colors mb-8 group"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-gray-400 hover:text-green-400 mb-8"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Explore
         </Link>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-8">
-            <div className="relative h-[450px] w-full rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
+            <div className="relative h-[450px] w-full rounded-3xl overflow-hidden border border-white/5">
               <img
-                src={facility.image}
+                src={facility.image || '/placeholder.jpg'}
                 alt={facility.name}
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="bg-white/5 border border-white/5 p-8 rounded-3xl space-y-4">
-              <h1 className="text-4xl font-black text-gray-100">
-                {facility.name}
-              </h1>
+            <div className="bg-white/5 p-8 rounded-3xl space-y-4">
+              <h1 className="text-4xl font-black">{facility.name}</h1>
               <p className="text-gray-400">{facility.description}</p>
             </div>
           </div>
           <div className="space-y-6">
-            <div className="bg-white/5 border border-white/10 p-8 rounded-3xl shadow-xl sticky top-24">
+            <div className="bg-white/5 p-8 rounded-3xl sticky top-24">
               <div className="flex justify-between mb-6 pb-4 border-b border-white/5">
-                <span className="text-sm text-gray-400">Price per hour</span>
+                <span className="text-sm">Price per hour</span>
                 <span className="text-2xl font-black text-green-400">
                   ${facility.price}
                 </span>
@@ -124,7 +139,7 @@ export default function FacilityDetailsPage({ params }) {
                   onChange={e =>
                     setBookingData({ ...bookingData, date: e.target.value })
                   }
-                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-gray-200"
+                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4"
                 />
                 <select
                   onChange={e =>
@@ -133,7 +148,7 @@ export default function FacilityDetailsPage({ params }) {
                       time_slot: e.target.value,
                     })
                   }
-                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-gray-200"
+                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4"
                 >
                   <option value="">Choose a slot</option>
                   <option value="06:00 AM">06:00 AM - 08:00 AM</option>
@@ -142,7 +157,7 @@ export default function FacilityDetailsPage({ params }) {
               </div>
               <button
                 onClick={handleBooking}
-                className="w-full py-3.5 mt-6 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold"
+                className="w-full py-3.5 mt-6 rounded-xl bg-green-500 font-bold hover:bg-green-600 transition"
               >
                 Book Venue Now
               </button>
