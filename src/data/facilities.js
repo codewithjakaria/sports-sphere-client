@@ -7,7 +7,7 @@ export const featuredFacilities = [
     image:
       'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?auto=format&fit=crop&w=600&q=80',
   },
-  
+
   {
     id: 2,
     name: 'Elite Arena Badminton Court',
