@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -10,49 +9,35 @@ import { authClient } from '@/lib/auth-client';
 export default function Login() {
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
 
   const handleChange = e => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleLogin = async () => {
     try {
-      await authClient.signIn.social({ provider: 'google' });
+      await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/',
+      });
     } catch (err) {
-      toast.error('Google sign-in failed');
+      toast.error('Google login failed!');
     }
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
-
     const { email, password } = formData;
-
     if (!email || !password) {
       toast.error('Please enter both email and password');
       return;
     }
-
     setLoading(true);
-
     try {
-      const { error } = await authClient.signIn.email({
-        email,
-        password,
-      });
-
-      if (error) {
-        throw new Error(error.message || 'Login failed');
-      }
-
+      const { error } = await authClient.signIn.email({ email, password });
+      if (error) throw new Error(error.message || 'Login failed');
       toast.success('Welcome back!');
       router.push('/');
     } catch (err) {
@@ -64,12 +49,10 @@ export default function Login() {
 
   return (
     <main className="min-h-screen bg-[#070b12] flex items-center justify-center px-6 py-16 relative overflow-hidden">
-      {/* Background glow */}
       <div className="absolute top-[-80px] right-[-60px] w-[320px] h-[320px] rounded-full bg-[#1a4a2e] opacity-30 blur-[80px] pointer-events-none" />
       <div className="absolute bottom-10 left-[-40px] w-[200px] h-[200px] rounded-full bg-[#0d3d24] opacity-25 blur-[80px] pointer-events-none" />
 
       <div className="relative w-full max-w-[420px] bg-[#0d1520] border border-[#1e2d3d] rounded-[20px] px-9 py-10 z-10">
-        {/* Header */}
         <div className="text-center mb-8">
           <h2 className="font-black text-[22px] text-slate-100">
             Welcome Back
@@ -77,13 +60,11 @@ export default function Login() {
           <p className="text-[13px] text-slate-500 mt-1">Sign in to continue</p>
         </div>
 
-        {/* Google Login */}
         <button
           type="button"
-          onClick={handleGoogleSignIn}
+          onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-[#111827] border border-[#1e2d3d] rounded-xl text-slate-300 text-sm font-medium hover:bg-[#141f2e] transition-all"
         >
-          {/* Google Icon (fixed size) */}
           <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 48 48">
             <path
               fill="#EA4335"
@@ -105,16 +86,13 @@ export default function Login() {
           Continue with Google
         </button>
 
-        {/* Divider */}
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-[#1e2d3d]" />
           <span className="text-[11px] text-slate-600 uppercase">or</span>
           <div className="flex-1 h-px bg-[#1e2d3d]" />
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
           <div>
             <label className="text-xs text-slate-400">Email</label>
             <input
@@ -128,7 +106,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="text-xs text-slate-400">Password</label>
             <input
@@ -142,14 +119,12 @@ export default function Login() {
             />
           </div>
 
-          {/* Forgot */}
           <div className="text-right">
             <Link href="/forgot-password" className="text-xs text-green-400">
               Forgot password?
             </Link>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
@@ -159,7 +134,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Register */}
         <p className="text-center text-sm text-slate-500 mt-6">
           Don't have an account?{' '}
           <Link href="/register" className="text-green-400">
