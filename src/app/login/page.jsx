@@ -8,7 +8,6 @@ import { authClient } from '@/lib/auth-client';
 
 export default function Login() {
   const router = useRouter();
-
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
 
@@ -20,10 +19,11 @@ export default function Login() {
     try {
       await authClient.signIn.social({
         provider: 'google',
-        callbackURL: '/',
+        callbackURL: `http://localhost:3000 || https://sports-sphere-client-phi.vercel.app`,
       });
     } catch (err) {
-      toast.error('Google login failed!');
+      console.error('Google Error:', err);
+      toast.error('Google login failed');
     }
   };
 
