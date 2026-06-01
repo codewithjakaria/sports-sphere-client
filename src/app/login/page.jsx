@@ -19,7 +19,7 @@ export default function Login() {
     try {
       await authClient.signIn.social({
         provider: 'google',
-        callbackURL: `http://localhost:3000 || https://sports-sphere-client-phi.vercel.app`,
+        callbackURL: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/`,
       });
     } catch (err) {
       console.error('Google Error:', err);
