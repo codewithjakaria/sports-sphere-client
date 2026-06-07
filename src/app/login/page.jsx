@@ -15,11 +15,23 @@ export default function Login() {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // const handleGoogleLogin = async () => {
+
+  //   try {
+  //     await authClient.signIn.social({
+  //       provider: 'google',
+  //       callbackURL: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/`,
+  //     });
+  //   } catch (err) {
+  //     console.error('Google Error:', err);
+  //     toast.error('Google login failed');
+  //   }
+  // };
   const handleGoogleLogin = async () => {
     try {
       await authClient.signIn.social({
         provider: 'google',
-        callbackURL: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/`,
+        callbackURL: 'https://sports-sphere-client-phi.vercel.app',
       });
     } catch (err) {
       console.error('Google Error:', err);
