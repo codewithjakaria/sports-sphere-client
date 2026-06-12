@@ -14,7 +14,7 @@ import { createAuthClient } from 'better-auth/react';
 const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 if (!baseURL) {
-  throw new Error('NEXT_PUBLIC_API_URL is missing');
+  throw new Error('NEXT_PUBLIC_API_URL missing');
 }
 
 export const authClient = createAuthClient({
